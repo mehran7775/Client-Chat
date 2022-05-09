@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# Client-Chat
-client-chat project with nuxt3
-=======
 # Nuxt 3 Minimal Starter
 
 Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
@@ -44,4 +40,3 @@ npm run preview
 ```
 
 Checkout the [deployment documentation](https://v3.nuxtjs.org/docs/deployment) for more information.
->>>>>>> d62cd63 (init client chat project)
