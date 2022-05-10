@@ -1,0 +1,32 @@
+@import "./variables/index";
+@import "./functions/index";
+@import "./mixins/index";
+
+@font-face {
+	font-family: 'IRANSansFaNum';
+    src:  url('/assets/new/font/IRANSansWeb(FaNum)_Bold.woff2') format('woff2'),  /* Chrome36+, Opera24+*/
+          url('/assets/new/font/IRANSansWeb(FaNum)_Bold.woff')  format('woff');  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+	font-weight: bold;
+}
+
+@font-face {
+	font-family: 'IRANSansFaNum';
+    src:  url('/assets/new/font/IRANSansWeb(FaNum).woff2')  format('woff2'),  /* Chrome36+, Opera24+*/
+          url('/assets/new/font/IRANSansWeb(FaNum).woff')   format('woff');  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+	font-weight: normal;
+}
+
+
+@font-face {
+	font-family: 'IRANSansEnNum';
+    src:  url('/assets/new/font/IRANSansWeb_Bold.woff2') format('woff2'),  /* Chrome36+, Opera24+*/
+          url('/assets/new/font/IRANSansWeb_Bold.woff')  format('woff');  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+	font-weight: bold;
+}
+
+@font-face {
+	font-family: 'IRANSansEnNum';
+    src:  url('/assets/new/font/IRANSansWeb.woff2')  format('woff2'),  /* Chrome36+, Opera24+*/
+          url('/assets/new/font/IRANSansWeb.woff')   format('woff');  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
+	font-weight: normal;
+}
