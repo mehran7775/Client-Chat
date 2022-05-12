@@ -1,4 +1,5 @@
 import useFetch from "@/composables/use-fetch"
+import Message  from "@/constants/types/Message"
 
 export default {
    getUsers() {
@@ -10,14 +11,8 @@ export default {
    getUser(user_id: string | number) {
       return useFetch(`users/?id=${encodeURIComponent( user_id )}`)
    },
-   sendMessage(user_id: string | number, message: any) {
-      const json = JSON.stringify({
-         user_id: user_id,
-         content: message,
-         self: true,
-         date: "1401/01/28"
-      })
-      return useFetch(`messages`, 'POST', json)
+   sendMessage(data: Message) {
+      return useFetch(`messages`, 'POST', data)
    },
    deleteMessage( id : string | number ) {
       return useFetch(`messages/${id}`, 'DELETE')

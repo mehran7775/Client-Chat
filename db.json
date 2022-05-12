@@ -107,7 +107,7 @@
     {
       "user_id": 6,
       "content": "hgkmuy",
-      "self": true,
+      "self": false,
       "date": "1401/01/28",
       "id": 22
     },
@@ -128,7 +128,7 @@
     {
       "user_id": 1,
       "content": "hfdjy",
-      "self": true,
+      "self": false,
       "date": "1401/01/28",
       "id": 25
     },
@@ -149,7 +149,7 @@
     {
       "user_id": 4,
       "content": "thdfhfgn",
-      "self": true,
+      "self": false,
       "date": "1401/01/28",
       "id": 28
     },
@@ -170,16 +170,9 @@
     {
       "user_id": 4,
       "content": "g",
-      "self": true,
-      "date": "1401/01/28",
-      "id": 36
-    },
-    {
-      "user_id": 4,
-      "content": "",
       "self": false,
       "date": "1401/01/28",
-      "id": 39
+      "id": 36
     },
     {
       "user_id": 3,
@@ -228,14 +221,21 @@
       "content": "restart",
       "self": true,
       "date": "1401/01/28",
-      "id": 58
+      "id": 59
+    },
+    {
+      "user_id": 3,
+      "content": "rthfdb",
+      "self": false,
+      "date": "2022/5/12",
+      "id": 60
     },
     {
       "user_id": "websocket",
       "content": "restart",
       "self": true,
-      "date": "1401/01/28",
-      "id": 59
+      "date": "2022/5/12",
+      "id": 63
     }
   ]
 }

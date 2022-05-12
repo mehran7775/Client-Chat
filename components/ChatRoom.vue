@@ -91,6 +91,7 @@ const emit = defineEmits(['delete_user'])
 watch(() => props.user_id, () => {
    get_user()
    get_messages()
+   test_websocket()
 })
 
 
@@ -122,24 +123,12 @@ enum state_ws {
 
 await get_user()
 await get_messages()
+test_websocket()
 
 
 //hooks
 
-onMounted(async () => {
-   if (props.user_id === "websocket") {
-
-      ws = connect_to_ws()
-      ws.onopen = () => {
-         console.log('connected to server successfully')
-      }
-      ws.onerror = (event: any) => {
-         console.log(event)
-      }
-
-   }
-
-
+onMounted(() => {
    document.addEventListener('click', (e) => {
       hide_option(e)
    })
@@ -152,10 +141,6 @@ onUnmounted(() => {
 
 
 //methods
-
-function connect_to_ws() {
-   return new WebSocket('wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self')
-}
 
 async function get_user() {
    const getUser = usePromis(apiServices.getUser)
@@ -174,6 +159,26 @@ async function get_messages() {
       messages.items = toRaw(getMessages.result)
    }
 }
+
+
+function test_websocket() {
+   if (props.user_id === "websocket") {
+      ws = connect_to_ws()
+      ws.onopen = () => {
+         console.log('connected to server successfully')
+      }
+      ws.onerror = (event: any) => {
+         console.log(event)
+      }
+
+   }
+}
+
+
+function connect_to_ws() {
+   return new WebSocket('wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self')
+}
+
 
 function customValidate(value: any) {
    if (!value || /profanity/gi.test(value)) {
@@ -194,8 +199,16 @@ async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
          }
       }
    }
+   const today = new Date();
+   const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
+   const data_json = JSON.stringify({
+      user_id: props.user_id,
+      content: value.pm,
+      self: true,
+      date: date
+   })
    const sendMessage = usePromis(apiServices.sendMessage)
-   await sendMessage.createPromis(props.user_id, value.pm)
+   await sendMessage.createPromis(data_json)
    if (sendMessage.result) {
       const chatRoom = document.querySelector('#messages')!
       messages.items.push(toRaw(sendMessage.result))
@@ -223,7 +236,7 @@ let delete_user = async () => {
 }
 
 function hide_option(e: any): void {
-   if (!document.getElementById('icon-option')!.contains(e.target)) {
+   if (!document.getElementById('icon-option')?.contains(e.target)) {
       showOption.value = false
    }
 }
