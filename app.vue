@@ -29,8 +29,7 @@
             class="w-full md:w-2/3 h-screen overflow-y-auto absolute md:static top-0 right-0 bg-gray-900">
             <Suspense>
               <template #default>
-                <CahtRoom :user_id="user_id" :back="() => (isActiveConversation = false)"
-                  @delete_user="delete_user" />
+                <CahtRoom :user_id="user_id" :back="() => (isActiveConversation = false)" @delete_user="delete_user" />
               </template>
               <template #fallback>
                 <div class="w-full h-full flex justify-center items-center">
@@ -64,7 +63,13 @@ import usePromis from '@/composables/use-promis'
 import Contact from "@/components/Contact.vue";
 import UserId from '@/constants/types/UserId'
 
-
+useHead({
+  title: 'client chat',
+  meta: [{ name: 'description', content: 'client chat of asre danesh afzar' }],
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.png' }
+  ]
+})
 
 //componentes 
 const CahtRoom = defineAsyncComponent(() => {

@@ -9,13 +9,6 @@ export default defineNuxtConfig({
       strict: true
    },
 
-   runtimeConfig: {
-      secretKey: '',
-      public: {
-         BASE_URL: process.env.BASE_URL || 'localhost:8000'
-      }
-   },
-
    tailwindcss: {
       content: [
          `components/**/*.{vue,js,ts}`,
