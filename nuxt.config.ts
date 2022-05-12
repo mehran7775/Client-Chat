@@ -32,9 +32,7 @@ export default defineNuxtConfig({
    },
 
    buildModules: [
-      '@nuxtjs/tailwindcss',
-      '@nuxtjs/style-resources',
-      '@pinia/nuxt'
+      '@nuxtjs/tailwindcss'
    ],
 
    css: [

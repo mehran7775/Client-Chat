@@ -34,7 +34,7 @@
    <section id="messages" class="overflow-y-auto pb-14">
       <nav>
          <ul class="messages flex flex-col p-3">
-            <Pm v-for="message in messages.items" :key="message.id" :message="message"
+            <Pm v-for="(message, i) in messages.items" :key="i" :message="message"
                @delete_message="delete_message" />
          </ul>
       </nav>
@@ -136,6 +136,9 @@ onMounted(() => {
 
 onUnmounted(() => {
    document.removeEventListener('click', hide_option)
+   if(props.user_id === "websocket" && ws.readyState === state_ws.OPEN) {
+      ws.close()
+   }
 })
 
 
@@ -189,7 +192,14 @@ function customValidate(value: any) {
 
 async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
    if (props.user_id === "websocket") {
-      if (value.pm == 'restart') {
+      try{
+         ws.send(value.pm)
+      }catch(e) {
+         console.log(e)
+         return
+      }
+      push_message(value.pm, true)
+       if (value.pm == 'restart') {
          if (ws.readyState === state_ws.OPEN) {
             ws.close()
             ws = connect_to_ws()
@@ -197,23 +207,28 @@ async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
                console.log('reconnected to server successfully')
             }
          }
+         resetForm()
+         return
+      }
+      ws.onmessage= function (event: any) {
+         push_message(event.data, false)
+      }
+   }else {
+      const today = new Date();
+      const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
+      const data_json = JSON.stringify({
+         user_id: props.user_id,
+         content: value.pm,
+         self: true,
+         date: date
+      })
+      const sendMessage = usePromis(apiServices.sendMessage)
+      await sendMessage.createPromis(data_json)
+      if (sendMessage.result) {
+         push_message(value.pm, true)
       }
    }
-   const today = new Date();
-   const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
-   const data_json = JSON.stringify({
-      user_id: props.user_id,
-      content: value.pm,
-      self: true,
-      date: date
-   })
-   const sendMessage = usePromis(apiServices.sendMessage)
-   await sendMessage.createPromis(data_json)
-   if (sendMessage.result) {
-      const chatRoom = document.querySelector('#messages')!
-      messages.items.push(toRaw(sendMessage.result))
-      chatRoom.scrollTo(0, chatRoom.scrollHeight)
-   }
+  
    resetForm()
 
 }
@@ -240,7 +255,21 @@ function hide_option(e: any): void {
       showOption.value = false
    }
 }
-
+function push_message(content: string, self: boolean): void {
+   const today = new Date();
+   const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
+   const chatRoom = document.querySelector('#messages')!
+   const message = {
+      id: Math.floor(Math.random() * (50000 - 100) + 100),
+      user_id: props.user_id,
+      content: content,
+      self: self,
+      date: date
+   }
+   
+   messages.items.push(message)
+   chatRoom.scrollTo(0, chatRoom.scrollHeight)
+}
 
 </script>
 

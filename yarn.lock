@@ -767,17 +767,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pinia/nuxt@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "@pinia/nuxt@npm:0.1.9"
-  dependencies:
-    vue-demi: "*"
-  peerDependencies:
-    pinia: ">=2.0.14"
-  checksum: 06082b9311290b108e70f1982540bde313579ef3548c5db30e96d35341121d31fd41d9860e6749dd7ae63fc6d63d28ab21c0f3b90b6e0699fdd0ae0a100bef4a
-  languageName: node
-  linkType: hard
-
 "@rollup/plugin-alias@npm:^3.1.9":
   version: 3.1.9
   resolution: "@rollup/plugin-alias@npm:3.1.9"
@@ -1122,7 +1111,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/devtools-api@npm:^6.0.0, @vue/devtools-api@npm:^6.0.0-beta.15, @vue/devtools-api@npm:^6.1.4":
+"@vue/devtools-api@npm:^6.0.0, @vue/devtools-api@npm:^6.0.0-beta.15":
   version: 6.1.4
   resolution: "@vue/devtools-api@npm:6.1.4"
   checksum: 027bb138b03ec7147dd15e5d0ef28d5b72c822530396cc8a86bc6fdb049dc6850314b9e897e497064e3ed47fad229a18141f56b8b8ca3d41092a576dc5b6538d
@@ -6364,25 +6353,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:^2.0.14":
-  version: 2.0.14
-  resolution: "pinia@npm:2.0.14"
-  dependencies:
-    "@vue/devtools-api": ^6.1.4
-    vue-demi: "*"
-  peerDependencies:
-    "@vue/composition-api": ^1.4.0
-    typescript: ">=4.4.4"
-    vue: ^2.6.14 || ^3.2.0
-  peerDependenciesMeta:
-    "@vue/composition-api":
-      optional: true
-    typescript:
-      optional: true
-  checksum: d07ed55b53e92da0971c3fcc0a1bd520b26cd50d266f46c8bab24fed87788461782a2c75088cf97c79810e7a4ceb28381f5d77daf280883ad3340c41962d0934
-  languageName: node
-  linkType: hard
-
 "pkg-types@npm:^0.3.2":
   version: 0.3.2
   resolution: "pkg-types@npm:0.3.2"
@@ -7408,12 +7378,10 @@ __metadata:
   dependencies:
     "@nuxtjs/style-resources": ^1.2.1
     "@nuxtjs/tailwindcss": 5.0.0-4
-    "@pinia/nuxt": ^0.1.9
     animate.css: ^4.1.1
     fibers: ^5.0.1
     node-sass: ^7.0.1
     nuxt: 3.0.0-rc.1
-    pinia: ^2.0.14
     sass: ^1.39.2
     sass-loader: 10
     vee-validate: ^4.5.11
@@ -8800,22 +8768,6 @@ __metadata:
   dependencies:
     bundle-runner: ^0.0.1
   checksum: f1cc37913369786e60db6cffcda3f016cb073301db765128cddebdcf8367b50a7525e47b60924788def443f3183b92bcfc72ad248ce28d3fed19ef092ae8b662
-  languageName: node
-  linkType: hard
-
-"vue-demi@npm:*":
-  version: 0.12.5
-  resolution: "vue-demi@npm:0.12.5"
-  peerDependencies:
-    "@vue/composition-api": ^1.0.0-rc.1
-    vue: ^3.0.0-0 || ^2.6.0
-  peerDependenciesMeta:
-    "@vue/composition-api":
-      optional: true
-  bin:
-    vue-demi-fix: bin/vue-demi-fix.js
-    vue-demi-switch: bin/vue-demi-switch.js
-  checksum: 40a0470caea8312e0d4df2541f141c36c768dfc7f2f7d41f0f28ba29df11d3119e2f09b94c815f13b7c7f3f45dbc247b0e9e0c02a1800e2823e241c1d771e39b
   languageName: node
   linkType: hard
 
