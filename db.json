@@ -19,6 +19,11 @@
       "id": 6,
       "name": "Jessica Sachs",
       "thumbnail": "/img/jessica-sachs.jpg"
+    },
+    {
+      "id": "websocket",
+      "name": "websocket",
+      "thumbnail": "/img/default_profile.jpeg"
     }
   ],
   "messages": [
@@ -210,6 +215,27 @@
       "self": false,
       "date": "1401/01/28",
       "id": 50
+    },
+    {
+      "user_id": "websocket",
+      "content": "Hi",
+      "self": true,
+      "date": "1401/01/28",
+      "id": 57
+    },
+    {
+      "user_id": "websocket",
+      "content": "restart",
+      "self": true,
+      "date": "1401/01/28",
+      "id": 58
+    },
+    {
+      "user_id": "websocket",
+      "content": "restart",
+      "self": true,
+      "date": "1401/01/28",
+      "id": 59
     }
   ]
 }

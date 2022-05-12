@@ -1,4 +1,5 @@
 import useFetch from "@/composables/use-fetch"
+
 export default {
    getUsers() {
       return useFetch('users')

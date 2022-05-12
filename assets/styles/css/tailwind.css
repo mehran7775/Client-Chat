@@ -8,3 +8,7 @@
   max-height: 3.5rem;
   @apply w-14 border border-gray-50 rounded-full p-1 shadow-md
 }
+
+.modal {
+  @apply fixed hidden inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full
+}

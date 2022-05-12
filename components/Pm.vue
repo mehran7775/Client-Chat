@@ -24,10 +24,10 @@
 
 <script setup lang="ts">
 
-import { ref, defineProps, onMounted, onUnmounted, defineEmits } from 'vue';
-import usePromis from '@/composables/use-promis';
+import { ref, defineProps, onMounted, onUnmounted, defineEmits } from 'vue'
+import usePromis from '@/composables/use-promis'
 import apiServices from '@/services/apiServices'
-import Message from '@/constants/type/Message';
+import Message from '@/constants/types/Message'
 
 //props
 
@@ -43,7 +43,6 @@ const emit = defineEmits(['delete_message'])
 
 
 
-
 //data
 
 let showOption = ref<boolean>(false)
@@ -54,10 +53,10 @@ let showOption = ref<boolean>(false)
 //hooks
 
 onMounted(()=> {
-   document.addEventListener('click', ( e )=> {
+   document.addEventListener('click', (e)=> {
       hide_option(e)
    })
-    document.addEventListener('contextmenu', ( e )=> {
+    document.addEventListener('contextmenu', (e)=> {
       hide_option(e)
    })
 })
@@ -75,13 +74,12 @@ function show_option() : void {
    showOption.value = !showOption.value
 }
 
-function hide_option( e: any ) : void {
+function hide_option(e: any): void {
    if(!document.getElementById(`pm-${props.message.id}`)?.contains(e.target)){
       showOption.value = false
    }
 }
-async function delete_message( id : string | number ) : Promise<void> {
-
+async function delete_message(id: string | number): Promise<void> {
    const deleteMessage = usePromis( apiServices.deleteMessage )
    await deleteMessage.createPromis( id )
    if(deleteMessage.result) {

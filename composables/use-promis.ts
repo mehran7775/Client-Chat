@@ -1,26 +1,23 @@
-import { reactive } from "vue";
+import { reactive } from "vue"
 
 export default function usePromis(fn: any) {
+
   const createPromis = async (...args: any) => {
-    data.loading = true;
-    data.error = null;
+    data.loading = true
+    data.error = null
     data.result = null;
-    // (async () =>{
-    //  const fetchData = await fn(...args);
-    //  data.result = fetchData.data
-    //  data.error = fetchData.error;
-    //  data.loading = false;
-    // })()
-    const fetchData = await fn(...args);
+    const fetchData = await fn(...args)
     data.result = fetchData.data
-    data.error = fetchData.error;
-    data.loading = false;
-  };
+    data.error = fetchData.error
+    data.loading = false
+  }
+
   const data = reactive({
     result: null,
     loading: false as boolean,
     error: null,
     createPromis,
-  });
-  return data;
+  })
+
+  return data
 }

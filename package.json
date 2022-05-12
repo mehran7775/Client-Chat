@@ -19,7 +19,6 @@
     "@pinia/nuxt": "^0.1.9",
     "animate.css": "^4.1.1",
     "pinia": "^2.0.14",
-    "vee-validate": "^4.5.11",
-    "yup": "^0.32.11"
+    "vee-validate": "^4.5.11"
   }
 }
