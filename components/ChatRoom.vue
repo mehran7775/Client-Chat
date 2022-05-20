@@ -12,9 +12,8 @@
                <span v-text="user.value.name" class="text-white mr-3"></span>
             </div>
          </div>
-         <svg v-if="user_id !== 'websocket'" xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 24 24"
-            class="w-10 h-10 fill-gray-400 hover:fill-gray-100 cursor-pointer" id="icon-option"
+         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+            viewBox="0 0 24 24" class="w-10 h-10 fill-gray-400 hover:fill-gray-100 cursor-pointer" id="icon-option"
             @click="showOption = !showOption">
             <path
                d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
@@ -34,8 +33,7 @@
    <section id="messages" class="overflow-y-auto pb-14">
       <nav>
          <ul class="messages flex flex-col p-3">
-            <Pm v-for="(message, i) in messages.items" :key="i" :message="message"
-               @delete_message="delete_message" />
+            <Pm v-for="(message, i) in messages" :key="i" :message="message" @delete_message="delete_message" />
          </ul>
       </nav>
    </section>
@@ -69,6 +67,7 @@ import apiServices from '@/services/apiServices'
 import Message from '@/constants/types/Message'
 import UserId from '@/constants/types/UserId'
 import Pm from '@/components/Pm.vue'
+import messageStore from '@/stores/message'
 
 //props
 
@@ -88,9 +87,9 @@ const emit = defineEmits(['delete_user'])
 
 //wathchs
 
-watch(() => props.user_id, () => {
-   get_user()
-   get_messages()
+watch(() => props.user_id, async() => {
+   if (ws.readyState === state_ws.OPEN) ws.close()
+   await get_user()
    test_websocket()
 })
 
@@ -102,14 +101,19 @@ let user = reactive({
    value: {} as User
 })
 
-let messages = reactive({
-   items: [] as Message[]
-})
-
-
 let showOption = ref<boolean>(false)
 
 let ws = ref<any>(null)
+
+
+//computed
+
+const messages = computed(() => {
+  return messageStore().items.filter( item => item.user_id == props.user_id )
+  
+})
+
+
 
 
 
@@ -122,7 +126,6 @@ enum state_ws {
 
 
 await get_user()
-await get_messages()
 test_websocket()
 
 
@@ -136,7 +139,7 @@ onMounted(() => {
 
 onUnmounted(() => {
    document.removeEventListener('click', hide_option)
-   if(props.user_id === "websocket" && ws.readyState === state_ws.OPEN) {
+   if (ws.readyState === state_ws.OPEN) {
       ws.close()
    }
 })
@@ -154,26 +157,14 @@ async function get_user() {
 
 }
 
-async function get_messages() {
-   const getMessages = usePromis(apiServices.getMessages)
-   await getMessages.createPromis(props.user_id as string | number)
-
-   if (getMessages.result) {
-      messages.items = toRaw(getMessages.result)
-   }
-}
-
 
 function test_websocket() {
-   if (props.user_id === "websocket") {
-      ws = connect_to_ws()
-      ws.onopen = () => {
-         console.log('connected to server successfully')
-      }
-      ws.onerror = (event: any) => {
-         console.log(event)
-      }
-
+   ws = connect_to_ws()
+   ws.onopen = () => {
+      console.log('connected to server successfully')
+   }
+   ws.onerror = (event: any) => {
+      console.log(event)
    }
 }
 
@@ -187,59 +178,36 @@ function customValidate(value: any) {
    if (!value || /profanity/gi.test(value)) {
       return false
    }
-   return true;
+   return true
 }
 
 async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
-   if (props.user_id === "websocket") {
-      try{
-         ws.send(value.pm)
-      }catch(e) {
-         console.log(e)
-         return
-      }
-      push_message(value.pm, true)
-       if (value.pm == 'restart') {
-         if (ws.readyState === state_ws.OPEN) {
-            ws.close()
-            ws = connect_to_ws()
-            ws.onopen = () => {
-               console.log('reconnected to server successfully')
-            }
+   try {
+      ws.send(value.pm)
+   } catch (e) {
+      console.log(e)
+      return
+   }
+   push_message(value.pm, true)
+   if (value.pm === 'restart') {
+      if (ws.readyState === state_ws.OPEN) {
+         ws.close()
+         ws = connect_to_ws()
+         ws.onopen = () => {
+            console.log('reconnected to server successfully')
          }
-         resetForm()
-         return
-      }
-      ws.onmessage= function (event: any) {
-         push_message(event.data, false)
-      }
-   }else {
-      const today = new Date();
-      const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
-      const data_json = JSON.stringify({
-         user_id: props.user_id,
-         content: value.pm,
-         self: true,
-         date: date
-      })
-      const sendMessage = usePromis(apiServices.sendMessage)
-      await sendMessage.createPromis(data_json)
-      if (sendMessage.result) {
-         push_message(value.pm, true)
       }
    }
-  
+   ws.onmessage = function (event: any) {
+      push_message(event.data, false)
+   }
+
    resetForm()
 
 }
 
-function delete_message(id: string | number): void {
-   const message = messages.items!.find((message) => message.id === id)
-   const index = messages.items!.indexOf(message as Message) as number
-   if (messages.items && index > -1) {
-      messages.items.splice(index, 1)
-   }
-
+function delete_message(id: number): void {
+   messageStore().delete_message(id)
 }
 
 let delete_user = async () => {
@@ -256,20 +224,11 @@ function hide_option(e: any): void {
    }
 }
 function push_message(content: string, self: boolean): void {
-   const today = new Date();
-   const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
    const chatRoom = document.querySelector('#messages')!
-   const message = {
-      id: Math.floor(Math.random() * (50000 - 100) + 100),
-      user_id: props.user_id,
-      content: content,
-      self: self,
-      date: date
-   }
-   
-   messages.items.push(message)
+   messageStore().push_message(content, props.user_id, self)
    chatRoom.scrollTo(0, chatRoom.scrollHeight)
 }
+
 
 </script>
 

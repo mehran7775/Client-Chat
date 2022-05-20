@@ -5,8 +5,8 @@ export default {
    getUsers() {
       return useFetch('users')
    },
-   getMessages(user_id: string | number) {
-      return useFetch(`messages/?user_id=${encodeURIComponent( user_id )}`)
+   addUser(user: any) {
+      return useFetch('users', 'POST', user)
    },
    getUser(user_id: string | number) {
       return useFetch(`users/?id=${encodeURIComponent( user_id )}`)

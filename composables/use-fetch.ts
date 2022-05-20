@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 const  APISettings = {
    token: '',
-   headers: new Headers({
+   headers: {
        'Accept': 'application/json',
        'Content-Type' : 'application/json'
-   }),
+   },
    baseURL: 'http://localhost:4000/',
 }
 export default async function useFetch( url : string, method: undefined | string = 'GET', body: any = null ) {

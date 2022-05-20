@@ -4,19 +4,32 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "test": "jest"
   },
   "devDependencies": {
     "@nuxtjs/style-resources": "^1.2.1",
     "@nuxtjs/tailwindcss": "5.0.0-4",
-    "fibers": "^5.0.1",
+    "@types/jest": "^27.5.1",
+    "@vue/test-utils": "next",
+    "@vue/vue3-jest": "^28.0.0",
+    "jest": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.0",
+    "jest-transform-stub": "^2.0.0",
     "node-sass": "^7.0.1",
     "nuxt": "3.0.0-rc.1",
     "sass": "^1.39.2",
-    "sass-loader": "10"
+    "sass-loader": "10",
+    "ts-jest": "^28.0.2",
+    "typescript": "^4.6.4",
+    "vitest": "^0.12.6"
   },
   "dependencies": {
+    "@babel/core": "^7.17.12",
+    "@babel/preset-env": "^7.17.12",
+    "@pinia/nuxt": "^0.1.9",
     "animate.css": "^4.1.1",
+    "pinia": "^2.0.14",
     "vee-validate": "^4.5.11"
   }
 }

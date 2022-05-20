@@ -3,8 +3,9 @@
       <div :class="['my-2 relative', message.self ? 'float-right' : 'float-left']"
          @contextmenu.prevent="showOption = !showOption" @keydown="showOption = !showOption" 
       >
-         <div :class="['text-white text-pm rounded-t rounded-r-md rounded-b-lg rounded-bl-2xl p-4', message.self ? 'bg-blue-700' : 'bg-gray-700']">
+         <div :class="['text-white text-pm rounded-t rounded-r-md rounded-b-lg rounded-bl-2xl px-4 pt-4 pb-2', message.self ? 'bg-blue-700' : 'bg-gray-700']">
             <p v-text="message.content" class="break-words"></p>
+             <div><small v-text="props.message.date" class="text-gray-400"></small></div>
          </div>
          <transition
          enter-active-class="animate__animated animate__zoomIn"
@@ -79,7 +80,7 @@ function hide_option(e: any): void {
       showOption.value = false
    }
 }
-async function delete_message(id: string | number): Promise<void> {
+async function delete_message(id: number): Promise<void> {
    const deleteMessage = usePromis( apiServices.deleteMessage )
    await deleteMessage.createPromis( id )
    if(deleteMessage.result) {
