@@ -186,6 +186,7 @@ function delete_user(id: string | number) {
 
 
 function customValidate(value: any) {
+  error.value = null
   if (!value) {
     return 'لطفا نام مخاطب را وراد کنید'
   }
