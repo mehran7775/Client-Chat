@@ -29,7 +29,9 @@
     "@babel/preset-env": "^7.17.12",
     "@pinia/nuxt": "^0.1.9",
     "animate.css": "^4.1.1",
+    "buffer": "^6.0.3",
     "pinia": "^2.0.14",
-    "vee-validate": "^4.5.11"
+    "vee-validate": "^4.5.11",
+    "what-the-pack": "^2.0.3"
   }
 }

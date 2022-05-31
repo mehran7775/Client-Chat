@@ -68,6 +68,7 @@ import Message from '@/constants/types/Message'
 import UserId from '@/constants/types/UserId'
 import Pm from '@/components/Pm.vue'
 import messageStore from '@/stores/message'
+import MessagePack from 'what-the-pack'
 
 //props
 
@@ -87,7 +88,7 @@ const emit = defineEmits(['delete_user'])
 
 //wathchs
 
-watch(() => props.user_id, async() => {
+watch(() => props.user_id, async () => {
    if (ws.readyState === state_ws.OPEN) ws.close()
    await get_user()
    test_websocket()
@@ -109,8 +110,8 @@ let ws = ref<any>(null)
 //computed
 
 const messages = computed(() => {
-  return messageStore().items.filter( item => item.user_id == props.user_id )
-  
+   return messageStore().items.filter(item => item.user_id == props.user_id)
+
 })
 
 
@@ -161,6 +162,7 @@ async function get_user() {
 function test_websocket() {
    ws = connect_to_ws()
    ws.onopen = () => {
+      ws.binaryType = 'arraybuffer';
       console.log('connected to server successfully')
    }
    ws.onerror = (event: any) => {
@@ -182,8 +184,17 @@ function customValidate(value: any) {
 }
 
 async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
+   const { encode, decode, Buffer } = MessagePack.initialize(2 ^ 10)
    try {
-      ws.send(value.pm)
+      console.log(Buffer)
+      // ws.send(Buffer.from(value.pm, "utf-8"))
+      // Buffer.from(value)
+
+      // Buffer.from(encode(value))
+
+      // Buffer.from(JSON.stringify(value))
+
+      // Buffer.from(JSON.stringify(encode(value)))
    } catch (e) {
       console.log(e)
       return
@@ -194,12 +205,14 @@ async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
          ws.close()
          ws = connect_to_ws()
          ws.onopen = () => {
+            ws.binaryType = 'arraybuffer';
             console.log('reconnected to server successfully')
          }
       }
    }
    ws.onmessage = function (event: any) {
-      push_message(event.data, false)
+      console.log(event.data)
+      push_message(decode((event.data)), false)
    }
 
    resetForm()
