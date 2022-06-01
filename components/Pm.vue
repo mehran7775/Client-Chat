@@ -11,7 +11,7 @@
          enter-active-class="animate__animated animate__zoomIn"
          leave-active-class="animate__animated animate__zoomOut"
          >
-            <div v-if="showOption" :class="['absolute bg-gray-700 rounded-md top-0 w-16 p-1', message.self ? '-left-20' : '-right-16 ml-36']">
+            <div v-if="showOption" :class="['absolute bg-gray-700 rounded-md top-0 w-16 p-1', message.self ? '-left-20' : '-right-20 ']">
                <ul class="w-full">
                   <li class="hover:bg-gray-600 text-white">
                      <button class="w-full py-2 px-1 hover:rounded-md" @click="delete_message(message.id)">حذف</button>

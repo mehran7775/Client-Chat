@@ -1,5 +1,5 @@
 <template>
-   <section id="header" class="bg-gray-900 py-5 px-2 shadow-2xl sticky top-0 z-0">
+   <section id="header" class="bg-gray-800 py-5 px-2 shadow-2xl sticky top-0 z-0">
       <div class="flex justify-between items-center px-2 relative">
          <div class="flex">
             <svg @click="back" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -39,10 +39,16 @@
    </section>
    <section id="footer" class="w-full md:w-2/3  fixed left-0 bottom-0 px-4 pb-4">
       <v-form class="w-full" @submit="onSubmit">
-         <div class="flex justify-center items-center">
+         <div class="relative flex justify-center items-center w-100 md:w-3/4 m-auto">
             <v-field name="pm" type="text" :rules="customValidate"
-               class="w-2/3 bg-gray-800 text-white rounded-r-2xl rounded-bl-sm rounded-tl-2xl py-2 px-3 border-gray-800">
+               class="w-5/6 md:w-2/3 bg-gray-800 text-white rounded-r-2xl rounded-bl-sm rounded-tl-2xl py-2 px-3 border-gray-800">
             </v-field>
+            <input type="file" class="hidden" ref="file" id="input-file" @change="uploadFile">
+            <button v-if="!validInput" @click="selectFile()" class="absolute icon-upload">
+               <svg class="fill-gray-300 hover:fill-gray-100 " xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="32" height="32" viewBox="0 0 24 24">
+                  <path d="M7.5,18A5.5,5.5 0 0,1 2,12.5A5.5,5.5 0 0,1 7.5,7H18A4,4 0 0,1 22,11A4,4 0 0,1 18,15H9.5A2.5,2.5 0 0,1 7,12.5A2.5,2.5 0 0,1 9.5,10H17V11.5H9.5A1,1 0 0,0 8.5,12.5A1,1 0 0,0 9.5,13.5H18A2.5,2.5 0 0,0 20.5,11A2.5,2.5 0 0,0 18,8.5H7.5A4,4 0 0,0 3.5,12.5A4,4 0 0,0 7.5,16.5H17V18H7.5Z" />
+               </svg>
+            </button>
             <button
                class="rounded-full mr-2 w-11 h-11 flex justify-center items-center pr-1 shadow-2xl cursor-pointer bg-gray-800">
                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
@@ -69,7 +75,8 @@ import UserId from '@/constants/types/UserId'
 import Pm from '@/components/Pm.vue'
 import messageStore from '@/stores/message'
 import MessagePack from 'what-the-pack'
-import buffer from 'buffer'
+import { Buffer } from 'buffer'
+import { createInputFiles } from 'typescript'
 
 //props
 
@@ -85,18 +92,6 @@ let props = defineProps<{
 const emit = defineEmits(['delete_user'])
 
 
-
-
-//wathchs
-
-watch(() => props.user_id, async () => {
-   if (ws.readyState === state_ws.OPEN) ws.close()
-   await get_user()
-   test_websocket()
-})
-
-
-
 //data
 
 let user = reactive({
@@ -107,16 +102,9 @@ let showOption = ref<boolean>(false)
 
 let ws = ref<any>(null)
 
+const { encode, decode, register } = MessagePack.initialize(2 ^ 20)
 
-//computed
-
-const messages = computed(() => {
-   return messageStore().items.filter(item => item.user_id == props.user_id)
-
-})
-
-
-
+let validInput = ref<string>('')
 
 
 //enum
@@ -127,8 +115,29 @@ enum state_ws {
 }
 
 
+//computed
+
+const messages = computed(() => {
+   return messageStore().items.filter(item => item.user_id == props.user_id)
+})
+
+
+
+//wathchs
+
+watch(() => props.user_id, async () => {
+   if (ws.readyState === state_ws.OPEN) ws.close()
+   await get_user()
+   test_websocket()
+   onMessage()
+})
+
+
+
+
 await get_user()
 test_websocket()
+onMessage()
 
 
 //hooks
@@ -173,11 +182,13 @@ function test_websocket() {
 
 
 function connect_to_ws() {
-   return new WebSocket('wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self')
+   // return new WebSocket('wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self')
+   return new WebSocket('ws://localhost:8080')
 }
 
 
 function customValidate(value: any) {
+   validInput.value = value
    if (!value || /profanity/gi.test(value)) {
       return false
    }
@@ -185,10 +196,9 @@ function customValidate(value: any) {
 }
 
 async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
-   const { encode, decode, Buffer } = MessagePack.initialize(2 ^ 20)
    try {
-      // ws.send(buffer.Buffer.from(JSON.stringify(encode(value))))
-      ws.send(buffer.Buffer.from(encode(value))
+      register('pm')
+      ws.send(encode(value))
    } catch (e) {
       console.log(e)
       return
@@ -199,16 +209,12 @@ async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
          ws.close()
          ws = connect_to_ws()
          ws.onopen = () => {
-            ws.binaryType = 'arraybuffer';
+            ws.binaryType = 'arraybuffer'
             console.log('reconnected to server successfully')
          }
       }
    }
-   ws.onmessage = function (event: any) {
-      const { data } = JSON.parse(event.data)
-      const pm = decode(buffer.Buffer.from(data))
-      push_message(pm, false)
-   }
+   onMessage()
 
    resetForm()
 
@@ -231,16 +237,45 @@ function hide_option(e: any): void {
       showOption.value = false
    }
 }
+
 function push_message(content: string, self: boolean): void {
    const chatRoom = document.querySelector('#messages')!
    messageStore().push_message(content, props.user_id, self)
    chatRoom.scrollTo(0, chatRoom.scrollHeight)
 }
 
+function onMessage() {
+    ws.onmessage = function (event: any) {
+      let pm = null
+      if(event.data instanceof ArrayBuffer) {
+         pm = decode(Buffer.from(event.data)).pm
+      }else {
+         pm = event.data
+      }
+      push_message(pm, false)
+   }
+}
+
+
+function selectFile() {
+  document.getElementById('input-file')!.click()
+}
+
+
+function uploadFile(event: any) {
+   console.log(event)
+      // let reader = new FileReader()
+   // reader.addEventListener('load',()=>{
+   //    img.preview= reader.result,
+   //    this.images.push(img)
+   // })
+   // reader.readAsDataURL(selectedFiles[i]);
+}
 
 </script>
 
 <style lang="scss" scoped>
+
 #messages {
    height: calc(100vh - 158px);
 }
@@ -248,4 +283,21 @@ function push_message(content: string, self: boolean): void {
 .animate__animated {
    --animate-duration: .2s;
 }
+
+.icon-upload {
+  left: 18%;
+  @include xsmall {
+     left: 16%;
+  }
+  @include small {
+     left: 14%;
+  }
+  @include medium {
+     left: 25%;
+  }
+  @include large {
+     left: 22%;
+  }
+}
+
 </style>
