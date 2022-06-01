@@ -69,6 +69,7 @@ import UserId from '@/constants/types/UserId'
 import Pm from '@/components/Pm.vue'
 import messageStore from '@/stores/message'
 import MessagePack from 'what-the-pack'
+import buffer from 'buffer'
 
 //props
 
@@ -184,17 +185,10 @@ function customValidate(value: any) {
 }
 
 async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
-   const { encode, decode, Buffer } = MessagePack.initialize(2 ^ 10)
+   const { encode, decode, Buffer } = MessagePack.initialize(2 ^ 20)
    try {
-      console.log(Buffer)
-      // ws.send(Buffer.from(value.pm, "utf-8"))
-      // Buffer.from(value)
-
-      // Buffer.from(encode(value))
-
-      // Buffer.from(JSON.stringify(value))
-
-      // Buffer.from(JSON.stringify(encode(value)))
+      // ws.send(buffer.Buffer.from(JSON.stringify(encode(value))))
+      ws.send(buffer.Buffer.from(encode(value))
    } catch (e) {
       console.log(e)
       return
@@ -211,8 +205,9 @@ async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
       }
    }
    ws.onmessage = function (event: any) {
-      console.log(event.data)
-      push_message(decode((event.data)), false)
+      const { data } = JSON.parse(event.data)
+      const pm = decode(buffer.Buffer.from(data))
+      push_message(pm, false)
    }
 
    resetForm()
