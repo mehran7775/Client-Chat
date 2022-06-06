@@ -13,13 +13,14 @@ const messageStore = defineStore({
    getters: {},
 
    actions: {
-      push_message(content: string, user_id: UserId, self: boolean) {
+      push_message(content: string, user_id: UserId, self: boolean, img?: string) {
          const today = new Date();
          const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate()
          const message = {
             id: Math.floor(Math.random() * (50000 - 100) + 100),
             user_id: user_id,
             content: content,
+            img: img,
             self: self,
             date: date
          }

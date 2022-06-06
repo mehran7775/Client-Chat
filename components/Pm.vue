@@ -3,9 +3,13 @@
       <div :class="['my-2 relative', message.self ? 'float-right' : 'float-left']"
          @contextmenu.prevent="showOption = !showOption" @keydown="showOption = !showOption" 
       >
-         <div :class="['text-white text-pm rounded-t rounded-r-md rounded-b-lg rounded-bl-2xl px-4 pt-4 pb-2', message.self ? 'bg-blue-700' : 'bg-gray-700']">
+         <div v-if="!message.img"
+          :class="['text-white pm rounded-t rounded-r-md rounded-b-lg rounded-bl-2xl px-4 pt-4 pb-2', message.self ? 'bg-blue-700' : 'bg-gray-700']">
             <p v-text="message.content" class="break-words"></p>
              <div><small v-text="props.message.date" class="text-gray-400"></small></div>
+         </div>
+         <div v-else>
+            <img :src="message.img" width="150" :alt="`image of ${message.img}`" class="border-gray-50">
          </div>
          <transition
          enter-active-class="animate__animated animate__zoomIn"
@@ -90,7 +94,7 @@ async function delete_message(id: number): Promise<void> {
 </script>
 
 <style scoped lang="scss">
-.text-pm {
+.pm {
    max-width: 250px;
 }
 .animate__animated {

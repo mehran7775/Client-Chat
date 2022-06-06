@@ -1,7 +1,8 @@
 interface Message {
    id : number,
    user_id : string | number,
-   content : any,
+   content?: any,
+   img?: string,
    date : string,
    self : boolean
 }
