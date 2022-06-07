@@ -1,5 +1,5 @@
 <template>
-   <li class="w-full" :id="`pm-${props.message.id}`">
+   <li onmousedown="return false" class="w-full" :id="`pm-${props.message.id}`">
       <div :class="['my-2 relative', message.self ? 'float-right' : 'float-left']"
          @contextmenu.prevent="showOption = !showOption" @keydown="showOption = !showOption" 
       >
@@ -9,7 +9,7 @@
              <div><small v-text="props.message.date" class="text-gray-400"></small></div>
          </div>
          <div v-else>
-            <img :src="message.img" width="150" :alt="`image of ${message.img}`" class="border-gray-50">
+            <img :src="message.img" width="150" :alt="`image of ${message.img}`" class="border border-gray-800 shadow-md shadow-gray-900">
          </div>
          <transition
          enter-active-class="animate__animated animate__zoomIn"

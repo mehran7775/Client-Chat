@@ -34,28 +34,32 @@
       <section id="messages" class="overflow-y-auto pb-14">
          <transition enter-active-class="animate__animated animate__fadeIn"
             leave-active-class="animate__animated animate__fadeOut">
-            <div v-if="dropZoneActive" class="absolute w-2/3 bg-gray-600 z-10">
+            <div v-if="dropZoneActive" class="absolute w-full sm:w-2/3 bg-gray-600 z-10">
                <div class="w-full h-full flex justify-center items-center">
                   <div>فایل ها را رها کنید</div>
                </div>
             </div>
-            <div v-else-if="!dropZoneActive && files.length > 0" class="absolute w-2/3 bg-gray-600 z-10 py-7">
+            <div v-else-if="!dropZoneActive && files.length > 0" class="absolute w-full sm:w-2/3 bg-gray-600 z-10 py-7">
                <h1 class="text-base text-gray-100 px-1 inline-block">فایل های انتخاب شده:</h1>
                <svg @click="files = []" class="inline-block float-left ml-5" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="32" height="32" viewBox="0 0 24 24">
                   <path class="fill-gray-300 hover:fill-gray-100 cursor-pointer"
                      d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                </svg>
-               <div class="mx-2/3 h-full">
-                  <div class="flex items-center justify-around flex-wrap h-full">
-                     <img v-for="pre in preview_filse" :src="pre" :alt="`image of ${preview_filse}`" width="120"
+               <div class="h-full">
+                  <div class="w-full flex items-center justify-around flex-wrap h-5/6 overflow-auto">
+                     <img v-for="file in files" :src="file.url" :alt="`image of ${file.id}`" width="120"
                         class="mx-2 border rounded">
+                  </div>
+                  <div class="mx-auto text-center">
+                     <button @click="trigger_send_file"
+                        class="w-32 rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-700 text-base font-medium text-white hover:bg-blue-800 focus:outline-none ">ارسال</button>
                   </div>
                </div>
             </div>
-            <div v-else class="absolute w-2/3"></div>
          </transition>
          <nav>
+            <span class="text-white">{{ percentage }}</span>
             <ul class="messages flex flex-col p-3">
                <Pm v-for="(message, i) in messages" :key="i" :message="message" @delete_message="delete_message" />
             </ul>
@@ -136,7 +140,9 @@ const { encode, decode, register } = MessagePack.initialize(2 ^ 20)
 
 let validInput = ref<string>('')
 
-const { addFiles, files, previewFile } = uploadablefile()
+const { addFiles, files } = uploadablefile()
+
+const percentage = ref<number>(0)
 
 
 
@@ -155,16 +161,6 @@ const messages = computed(() => {
    return messageStore().items.filter(item => item.user_id == props.user_id)
 })
 
-const preview_filse = computed(() => {
-   const previews = [] as string[]
-   files.value.forEach((file, i) => {
-      if (previewFile(file.file)) {
-         previews.push(previewFile(file.file) as string)
-      }
-   })
-   return previews
-})
-
 
 //wathchs
 
@@ -181,7 +177,6 @@ watch(() => props.user_id, async () => {
 
 await get_user()
 test_websocket()
-onMessage()
 
 
 //hooks
@@ -247,7 +242,7 @@ async function onSubmit(value: any, { resetForm }: { resetForm: () => void }) {
       console.log(e)
       return
    }
-   push_message(value.pm, true)
+   push_message(true, value.pm)
    if (value.pm === 'restart') {
       if (ws.readyState === state_ws.OPEN) {
          ws.close()
@@ -282,21 +277,21 @@ function hide_option(e: any): void {
    }
 }
 
-function push_message(content: string, self: boolean, img?: string): void {
+function push_message(self: boolean, content?: string, img?: string): void {
    const chatRoom = document.querySelector('#messages')!
-   messageStore().push_message(content, props.user_id, self, img)
+   messageStore().push_message(props.user_id, self, content, img)
    chatRoom.scrollTo(0, chatRoom.scrollHeight)
 }
 
 function onMessage() {
    ws.onmessage = function (event: any) {
       let pm = null
-      if (event.data instanceof ArrayBuffer) {
+      if (event.data instanceof ArrayBuffer && decode(Buffer.from(event.data)).pm) {
          pm = decode(Buffer.from(event.data)).pm
       } else {
          pm = event.data
       }
-      push_message(pm, false)
+      push_message(false, pm)
    }
 }
 
@@ -308,21 +303,49 @@ function selectFile() {
 
 function uploadFile(event: any) {
    if (event.target.files) addFiles(event.target.files)
-   // addFiles(event.target.files)
-   // if(files.value) {
-   //    files.value.forEach(file => push_message('', true, URL.createObjectURL(file)))
-   // }
-   // const file = event.target.files[0]
-   // if (file) {
-   //    console.log(file)
-   // }
-   // let reader = new FileReader()
-   // reader.addEventListener('load',()=>{
-   //    img.preview= reader.result,
-   //    this.images.push(img)
-   // })
-   // reader.readAsDataURL(selectedFiles[i]);
 }
+
+function trigger_send_file() {
+   try {
+      files.value.forEach(file => {
+         send_file(file.file, function (bufferedAmount: number) {
+            if (bufferedAmount == 0) {
+               // push_message(true, undefined, file.url)
+               // onMessage()
+               console.log('file sent')
+               return
+            } else {
+               let loaded = file.file.size - bufferedAmount
+               percentage.value = Math.round((loaded * 100) / file.file.size)
+            }
+
+         })
+      })
+   } catch (e) {
+      console.log(e)
+   }
+   files.value = []
+}
+
+function send_file( file: any, callback: (( bytesNotSent: number ) => void ) | null ) {
+   ws.send(encode(file) )
+   if ( callback != null ) {
+      let interval = setInterval(function () {
+         //  console.log(ws.bufferedAmount)
+         if ( ws.bufferedAmount > 0 ) {
+            console.log('yes')
+            callback( ws.bufferedAmount )
+         } else {
+            callback( 0 )
+            clearInterval( interval );
+         }
+      }, 100);
+   }
+
+}
+
+
+
 
 </script>
 

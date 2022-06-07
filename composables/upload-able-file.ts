@@ -21,12 +21,18 @@ export default function () {
         if (index > -1) files.value.splice(index, 1)
     }
 
-    function previewFile(file: File): string | undefined {
-        if (!file.type.match('image')) return
-        // let picReader = new FileReader()
-        return URL.createObjectURL(file)
-    }
+    // function consume(stream: any, total = 0) {
+    //     while (stream.state === "readable") {
+    //       let data = stream.read()
+    //       total += data.byteLength;
+    //       console.log("received " + data.byteLength + " bytes (" + total + " bytes in total).")
+    //     }
+    //     if (stream.state === "waiting") {
+    //       stream.ready.then(() => consume(stream, total))
+    //     }
+    //     return stream.closed
+    //   }
 
-    return { files, addFiles, removeFile, previewFile }
+    return { files, addFiles, removeFile }
 }
 

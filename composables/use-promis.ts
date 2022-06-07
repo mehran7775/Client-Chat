@@ -11,7 +11,7 @@ export default function usePromis(fn: any) {
     data.error = fetchData.error
     data.loading = false
   }
-
+  
   const data = reactive({
     result: null,
     loading: false as boolean,
@@ -19,5 +19,5 @@ export default function usePromis(fn: any) {
     createPromis,
   })
 
-  return data
+  return data 
 }

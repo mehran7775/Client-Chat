@@ -96,6 +96,7 @@ import usePromis from '@/composables/use-promis'
 import Contact from "@/components/Contact.vue"
 import UserId from '@/constants/types/UserId'
 import { storeToRefs } from 'pinia'
+// import { consume } from '@/composables/upload-able-file'
 
 useHead({
   title: 'client chat',
@@ -159,6 +160,7 @@ async function get_users(): Promise<void> {
    const getUsers = usePromis(apiServices.getUsers)
   await getUsers.createPromis()
   if (getUsers.result) {
+    // consume(getUsers.result.body)
     userStore().items = toRaw(getUsers.result)
   }
 }
@@ -192,6 +194,8 @@ function customValidate(value: any) {
   }
   return true
 }
+
+
 async function add_user(value: any, { resetForm }: { resetForm: () => void }) {
   const user = JSON.stringify({
     name: value.name,
